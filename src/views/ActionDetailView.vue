@@ -6,8 +6,10 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import RecordFormSheet from '../components/RecordFormSheet.vue'
+import ActionDemo from '../components/demo/ActionDemo.vue'
 import { useActionLibrary } from '../composables/useActionLibrary.js'
 import { useTrainLog } from '../composables/useTrainLog.js'
+import { getActionDemo } from '../demo/actionDemos.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -45,6 +47,9 @@ watch(
   },
   { immediate: true },
 )
+
+/** 演示配置，未配置的动作返回 null，模板据此跳过演示区块 */
+const demo = computed(() => (action.value ? getActionDemo(action.value.action_id) : null))
 
 const sections = computed(() => {
   if (!action.value) return []
@@ -105,6 +110,8 @@ async function onSubmit(payload) {
           <span class="head__part">{{ action.body_part }}</span>
           <h1 class="head__title">{{ action.action_name }}</h1>
         </header>
+
+        <ActionDemo v-if="demo" :demo="demo" />
 
         <section v-for="section in sections" :key="section.key" class="card block">
           <h2 class="block__label">{{ section.label }}</h2>

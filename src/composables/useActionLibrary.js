@@ -21,22 +21,37 @@ const state = reactive({
   keyword: '',
 })
 
-/** 加载动作库（含首次种子写入），重复调用只会真正执行一次 */
-async function load({ force = false } = {}) {
-  if (state.loaded && !force) return
-  if (state.loading) return
+/**
+ * 进行中的加载 Promise。
+ *
+ * 必须缓存它：否则并发调用者只能拿到「正在加载」这个状态而无法等待完成。
+ * 冷启动直接打开动作详情页时，App 与详情页会几乎同时调 load()，
+ * 详情页需要在加载真正结束后才能判断动作存在与否，
+ * 早期实现里第二个调用直接 return 导致详情页误判「找不到动作」。
+ */
+let inflight = null
 
-  state.loading = true
-  state.error = ''
-  try {
-    await ensureSeeded()
-    state.actions = await listActions()
-    state.loaded = true
-  } catch (err) {
-    state.error = err?.message || '动作库加载失败'
-  } finally {
-    state.loading = false
-  }
+/** 加载动作库（含首次种子写入）。并发调用共享同一次加载，重复调用不会重复执行 */
+function load({ force = false } = {}) {
+  if (state.loaded && !force) return Promise.resolve()
+  if (inflight) return inflight
+
+  inflight = (async () => {
+    state.loading = true
+    state.error = ''
+    try {
+      await ensureSeeded()
+      state.actions = await listActions()
+      state.loaded = true
+    } catch (err) {
+      state.error = err?.message || '动作库加载失败'
+    } finally {
+      state.loading = false
+      inflight = null
+    }
+  })()
+
+  return inflight
 }
 
 /** 按部位 + 关键词筛选后的动作列表 */

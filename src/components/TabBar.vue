@@ -9,6 +9,7 @@ const activeTab = computed(() => route.meta?.tab ?? 'home')
 
 const tabs = [
   { key: 'home', label: '今日训练', to: { name: 'home' } },
+  { key: 'calendar', label: '日历', to: { name: 'calendar' } },
   { key: 'library', label: '动作库', to: { name: 'library' } },
 ]
 </script>
@@ -30,6 +31,20 @@ const tabs = [
             fill="currentColor"
           />
           <path d="M2 9.5h1.5v5H2zM20.5 9.5H22v5h-1.5z" fill="currentColor" />
+        </svg>
+        <svg v-else-if="tab.key === 'calendar'" viewBox="0 0 24 24" width="22" height="22">
+          <path
+            d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 19 21H5a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 5 5zm.5 4.5v9.5h13V9.5z"
+            fill="currentColor"
+          />
+          <path
+            d="M7.5 3h1.6v3.5H7.5zM14.9 3h1.6v3.5h-1.6z"
+            fill="currentColor"
+          />
+          <path
+            d="M7 11.5h2.2v2.2H7zM11 11.5h2.2v2.2H11zM15 11.5h2.2v2.2H15zM7 15.3h2.2v2.2H7zM11 15.3h2.2v2.2H11z"
+            fill="currentColor"
+          />
         </svg>
         <svg v-else viewBox="0 0 24 24" width="22" height="22">
           <path

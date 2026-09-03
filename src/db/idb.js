@@ -111,6 +111,21 @@ export function getAllByIndex(storeName, indexName, value) {
   )
 }
 
+/**
+ * 按索引区间读取多条（闭区间）。
+ * train_date 存的是 YYYY-MM-DD 字符串，字典序与时间序一致，
+ * 所以可以直接用字符串边界做范围查询，不需要额外存时间戳。
+ * @param {string} storeName
+ * @param {string} indexName
+ * @param {IDBValidKey} lower 下界（含）
+ * @param {IDBValidKey} upper 上界（含）
+ */
+export function getAllByIndexRange(storeName, indexName, lower, upper) {
+  return withStore(storeName, 'readonly', (store) =>
+    toPromise(store.index(indexName).getAll(IDBKeyRange.bound(lower, upper))),
+  )
+}
+
 /** 写入单条（存在则覆盖） */
 export function put(storeName, value) {
   return withStore(storeName, 'readwrite', (store) => toPromise(store.put(value)))

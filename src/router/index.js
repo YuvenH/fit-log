@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import CalendarView from '../views/CalendarView.vue'
 import ActionLibraryView from '../views/ActionLibraryView.vue'
 import ActionDetailView from '../views/ActionDetailView.vue'
 
@@ -16,6 +17,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: { title: '今日训练', tab: 'home' },
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: CalendarView,
+      meta: { title: '训练日历', tab: 'calendar' },
     },
     {
       path: '/library',

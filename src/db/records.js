@@ -3,7 +3,7 @@
  * 字段与 PRD 第 8 节表 2 一一对应。
  */
 
-import { getAllByIndex, getByKey, put, remove } from './idb.js'
+import { getAllByIndex, getAllByIndexRange, getByKey, put, remove } from './idb.js'
 import { STORE_RECORD, IDX_RECORD_TRAIN_DATE } from './schema.js'
 import { createId } from '../utils/id.js'
 import { todayKey } from '../utils/date.js'
@@ -112,4 +112,23 @@ export async function listRecordsByDate(dateKey) {
  */
 export function getRecord(recordId) {
   return getByKey(STORE_RECORD, recordId)
+}
+
+/**
+ * 读取某个日期区间内的全部记录，按日期与创建顺序正序。
+ * 日历按月拉取时用这个，一次 IO 拿到整月数据，避免逐日查询。
+ * @param {string} fromDate YYYY-MM-DD（含）
+ * @param {string} toDate YYYY-MM-DD（含）
+ * @returns {Promise<Array>}
+ */
+export async function listRecordsBetween(fromDate, toDate) {
+  const records = await getAllByIndexRange(
+    STORE_RECORD,
+    IDX_RECORD_TRAIN_DATE,
+    fromDate,
+    toDate,
+  )
+  return records.sort(
+    (a, b) => a.train_date.localeCompare(b.train_date) || a.create_time - b.create_time,
+  )
 }
